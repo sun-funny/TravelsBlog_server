@@ -1,4 +1,4 @@
-import { Body, Controller, Post, HttpException, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { TravelsService } from 'src/services/travels/travels.service';
 import { TravelDto } from 'src/dto/travel-dto';
 
@@ -6,13 +6,13 @@ import { TravelDto } from 'src/dto/travel-dto';
 export class TravelsController {
   constructor(private travelsService: TravelsService) {}
 
+  @Get()
+  async getTravels() {
+    return this.travelsService.getAllTravels();
+  }
+
   @Post()
   async createTravel(@Body() travelDto: TravelDto) {
-    try {
-      const savedTravel = await this.travelsService.createTravel(travelDto);
-      return savedTravel;
-    } catch (error) {
-      throw new HttpException('Ошибка при создании путешествия', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return this.travelsService.createTravel(travelDto);
   }
 }

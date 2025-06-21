@@ -8,12 +8,16 @@ import { TravelDto } from 'src/dto/travel-dto';
 export class TravelsService {
   constructor(@InjectModel(Travel.name) private travelModel: Model<TravelDocument>) {}
 
-    async createTravel(travelDto: TravelDto): Promise<Travel> {
-        const createdTravel = new this.travelModel(travelDto);
-        return createdTravel.save();
-    }
+  async getAllTravels(): Promise<Travel[]> {
+    return this.travelModel.find().exec();
+  }
 
-    async deleteTravels(): Promise<any> {
-        return this.travelModel.deleteMany({});
-    }
+  async createTravel(travelDto: TravelDto): Promise<Travel> {
+    const createdTravel = new this.travelModel(travelDto);
+    return createdTravel.save();
+  }
+
+  async deleteTravels(): Promise<any> {
+    return this.travelModel.deleteMany({});
+  }
 }
