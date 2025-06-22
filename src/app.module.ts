@@ -17,8 +17,8 @@ import { join } from 'path';
     CountryModule,
     MongooseModule.forRoot('mongodb://localhost:27017/travels'),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'assets'),
-      serveRoot: '/assets',
+      rootPath: join(__dirname, '..', 'assets/uploads'),
+      serveRoot: '/uploads',
     }),
   ],
   controllers: [AppController],
