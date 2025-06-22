@@ -1,6 +1,9 @@
-import { Body, Controller, Get, Post, Put, Delete, Param } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Delete, Param, UseInterceptors, UploadedFiles} from '@nestjs/common';
 import { PointService } from 'src/services/country/country.service';
 import { PointDto } from 'src/dto/point-dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('points')
 export class PointsController {
@@ -34,6 +37,25 @@ export class PointsController {
   @Get()
   async getAllPoints() {
     return this.pointService.getAllCountries();
+  } 
+
+  @Post('upload')
+  @UseInterceptors(FilesInterceptor('images', 10, {
+    storage: diskStorage({
+      destination: './assets/uploads',
+      filename: (req, file, callback) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const ext = extname(file.originalname);
+        const filename = `${uniqueSuffix}${ext}`;
+        callback(null, filename);
+      },
+    }),
+  }))
+  async uploadFiles(@UploadedFiles() files: Express.Multer.File[]) {
+    const fileUrls = files.map(file => {
+      return `assets/uploads/${file.filename}`;
+    });
+    return { urls: fileUrls };
   }
 
 }
