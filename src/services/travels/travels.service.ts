@@ -17,9 +17,9 @@ export class TravelsService {
     return createdTravel.save();
   }
 
-  async updateTravel(id: string, travelDto: TravelDto): Promise<Travel | null> {
-    return this.travelModel.findByIdAndUpdate(id, travelDto, { new: true }).exec();
-  }
+async updateTravel(id: string, travelDto: TravelDto): Promise<Travel | null> {
+  return this.travelModel.findByIdAndUpdate(id, travelDto, { new: true }).exec();
+}
 
   async deleteTravel(id: string): Promise<any> {
   try {
