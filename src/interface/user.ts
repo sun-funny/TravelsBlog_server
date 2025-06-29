@@ -1,7 +1,16 @@
+export type Roles = 'admin' | 'user';
+
+import * as mongoose from "mongoose";
+
 export interface IUser {
-  _id?: string;
-  login: string;
-  psw: string;
-  cardNumber?: string;
-  email?: string;
+    psw: string,
+    login: string,
+    role?: Roles,
+    _id?: string
+}
+
+export interface IResponseUser {
+    id: string,
+    access_token: string,
+    role: Roles
 }

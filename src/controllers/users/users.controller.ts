@@ -1,95 +1,78 @@
-import {Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Query, UseGuards, Request} from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpException,
+    HttpStatus,
+    Param,
+    Post,
+    Put,
+    Query,
+    UseGuards
+} from '@nestjs/common';
 import {UsersService} from "../../services/users/users.service";
-import {User} from "../../shemas/user";
+import { User } from 'src/shemas/user';
 import {UserDto} from "../../dto/user-dto";
 import RejectedValue = jest.RejectedValue;
-import { AuthGuard } from '@nestjs/passport';
-import { AuthService } from 'src/services/Authentication/auth/auth.service';
- 
+import {AuthGuard} from "@nestjs/passport";
+import {JwtAuthGuard} from "../../services/Authentication/jwt-auth.guard/jwt-auth.guard.service";
+import { ValidationParamIdPipe } from 'src/pipes/param-id.pipe';
+import { UserAuthPipe } from 'src/pipes/user-auth.pipe';
+import { IUser } from 'src/interface/user';
+
 @Controller('users')
 export class UsersController {
-    constructor(private userService: UsersService,
-                private authService: AuthService
-    ) {
-    }
- 
-    @Post()
-    async createUser(@Body() data: UserDto): Promise<User> {
+    constructor(private userService: UsersService) {}
 
-        const existingUser = await this.userService.checkRegUser(data.login);
-        const existingEmail = await this.userService.findByEmail(data.email);
-        if (existingUser.length > 0) {
-        console.log('err - user уже существует');
-        throw new HttpException({
-            status: HttpStatus.CONFLICT,
-            errorText: 'Пользователь с таким логином уже зарегистрирован'
-        }, HttpStatus.CONFLICT);
-        }
-
-        if (existingEmail) {
-        console.log('err - email уже существует');
-        throw new HttpException({
-            status: HttpStatus.CONFLICT,
-            errorText: 'Пользователь с таким email уже зарегистрирован'
-        }, HttpStatus.CONFLICT);
-        }
-    
-    return this.userService.createUser(data);
-    }
 
     @Get()
     getAllUsers(): Promise<User[]> {
         return this.userService.getAllUsers();
     }
- 
+
+
     @Get(":id")
-    getUserById(@Param('id') id: string): Promise<User | null> {
+    getUserById(@Param('id') id): Promise<User | null> {
         return this.userService.getUserById(id);
     }
 
-    @UseGuards(AuthGuard('local'))
 
-    @Post(':login')
-    async login(@Request() req) {
-        try {
-            	return this.authService.login(req.user);
-        } catch (error) {
-        throw error;
+    @Post()
+    registerUser(@Body(UserAuthPipe) data: UserDto): Promise<boolean> {
+        return this.userService.checkRegUser(data.login).then((queryRes) => {
+            if (queryRes.length === 0) {
+                return this.userService.registerUser(data);
+            } else {
+                console.log('err - user exists')
+                throw new HttpException({
+                    status: HttpStatus.CONFLICT,
+                    errorText: 'Пользователь уже зарегистрирован',
+                }, HttpStatus.CONFLICT)
+            }
+        });
+
     }
-}
- 
+    @UseGuards(AuthGuard('local'))
+    @Post(":login")
+    authUser(@Body(UserAuthPipe) data: UserDto, @Param('login') login): any  {
+        return this.userService.login(data);
+    }
+
     @Put(":id")
-    updateUsers(@Param('id') id: string, @Body() data: Partial<UserDto>): Promise<User | null> {
-        return this.userService.updateUser(id, data);
+    updateUsers(@Param('id') id, @Body() data) : Promise<User | null> {
+        return this.userService.updateUsers(id, data);
     }
- 
+
     @Delete()
-    deleteAllUsers(): Promise<any> {
-        return this.userService.deleteAllUsers();
+    deleteUsers(): Promise<any> {
+        return this.userService.deleteUsers();
     }
- 
- 
+
+
     @Delete(":id")
-    deleteUserById(@Param('id') id: string): Promise<User | null> {
+    deleteUserById(@Param('id') id): Promise<User | null> {
         return this.userService.deleteUserById(id);
     }
- 
+
 }
-
-/*
-    @Post('login')
-    async login(@Request() req) {
-        return this.authService.login(req.user)
-    }
-
-    
-async validateUser(@Param('login') login: string): Promise<any> {
-    const user = await this.userService.findByLogin(login);
-    if (!user) {
-      throw new HttpException({
-        status: HttpStatus.NOT_FOUND,
-        errorText: 'Пользователь не найден в базе',
-      }, HttpStatus.NOT_FOUND);
-    }
-    return user;
-}*/

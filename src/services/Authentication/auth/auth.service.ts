@@ -1,70 +1,23 @@
-import { Injectable, HttpException, HttpStatus, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from '../../users/users.service';
-import { UserDto } from 'src/dto/user-dto';
-import { PassportStrategy } from '@nestjs/passport';
-import { JwtService } from '@nestjs/jwt';
-import { Strategy } from 'passport-local';
-import { response } from 'express';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import {UsersService} from "../../users/users.service";
+import {PassportStrategy} from "@nestjs/passport";
+import {Strategy} from "passport-local";
 
 @Injectable()
 export class AuthService extends PassportStrategy(Strategy){
-  constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService
-  ) {
-    super({
-        usernameField: 'login', 
-        passwordField: 'psw',
-        passReqToCallback: false
-    })
-  }
-
-  async validate(login: string, psw: string): Promise<any> {
-        const user = await this.usersService.findByLogin(login);
-        console.log('user', user);
-
-    if (!user) {
-        	throw new HttpException(
-            { message: 'Пользователь не найден в базе', statusCode: 404 },
-            HttpStatus.NOT_FOUND
-        );
-    
+    constructor(private usersService: UsersService) {
+        super({usernameField: 'login', passwordField: 'psw'})
     }
 
-    if (user.psw !== psw) {
-      throw new UnauthorizedException('Пароль неверный');
-    }        
-    
-    return user;
-    }
-
-    
-    async login(user: any) {
-    const payload = { 
-      login: user.login, 
-      sub: user._id
-    };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
-  }
-
-}
-
-/*
-  async validateUser(login: string, pass: string): Promise<any> {
-        const user = await this.usersService.findByLogin(login);
-        if (user && user.psw === pass) {
-            const { psw, ...result } = user;
-            return result;
+    async validate(login: string, psw: string): Promise<any> {
+        console.log('call validate')
+        const user = await this.usersService.checkAuthUser(login, psw);
+        if(user.length === 0) {
+            throw new HttpException({
+                status: HttpStatus.CONFLICT,
+                errorText: 'Пользователь не найден'
+            }, HttpStatus.CONFLICT);
         }
-        return null;
+        return true;
     }
-
-        async login(user: any) {
-        const payload = { login: user.login, sub: user.id };
-        return {
-            access_token: this.jwtService.sign(payload),
-        };
-    }
-*/
+}
