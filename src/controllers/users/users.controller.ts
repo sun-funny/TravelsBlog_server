@@ -33,8 +33,8 @@ export class UsersController {
 
 
     @Get(":id")
-    getUserById(@Param('id') id): Promise<User | null> {
-        return this.userService.getUserById(id);
+        getUserById(@Param('id', ValidationParamIdPipe) id): Promise<User | null> {
+    return this.userService.getUserById(id);
     }
 
 
