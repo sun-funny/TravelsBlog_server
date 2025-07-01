@@ -1,4 +1,4 @@
-import {BadRequestException, Delete, Get, Injectable, Param, Post, Put} from '@nestjs/common';
+import {BadRequestException, Delete, Get, Injectable, Param, Post, Put, UnauthorizedException} from '@nestjs/common';
 import {InjectModel} from "@nestjs/mongoose";
 import {Model} from "mongoose";
 import { User, UserDocument } from 'src/shemas/user';
@@ -71,14 +71,41 @@ export class UsersService {
     }
 
     async login(user: IUser): Promise<IResponseUser> {
-        const userFromDB = <IUser>await this.userModel.findOne({login:user.login}); // first find user
-        const payload = {login: user.login, psw: user.psw, role: userFromDB?.role, _id: userFromDB?._id}; //ads _id
+        const userFromDB = await this.userModel.findOne({login: user.login});
+        
+        if (!userFromDB) {
+            throw new BadRequestException('User not found');
+        }
+    
+        const payload = { 
+            login: user.login, 
+            sub: userFromDB._id.toString(),
+            role: userFromDB.role 
+        };
+        
         return {
-            id: userFromDB._id,
-            access_token: this.jwtService.sign(payload),
+            id: userFromDB._id.toString(),
+            access_token: this.jwtService.sign(payload, { expiresIn: '15m' }),
+            refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
             role: userFromDB.role
-        } as IResponseUser;
+        };
     }
+
+    async refreshToken(refreshToken: string): Promise<{ access_token: string }> {
+        try {
+          const payload = this.jwtService.verify(refreshToken);
+          const newPayload = { 
+            login: payload.login, 
+            sub: payload.sub,
+            role: payload.role 
+          };
+          return {
+            access_token: this.jwtService.sign(newPayload, { expiresIn: '15m' })
+          };
+        } catch (e) {
+          throw new UnauthorizedException('Invalid refresh token');
+        }
+      }
 
      extractTokenFromHeader(request: Request): string | undefined {
         const [type, token] = request.headers.authorization?.split(' ') ?? [];

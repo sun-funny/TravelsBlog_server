@@ -75,4 +75,9 @@ export class UsersController {
         return this.userService.deleteUserById(id);
     }
 
+    @Post('refresh')
+        async refresh(@Body() body: { refresh_token: string }) {
+        return this.userService.refreshToken(body.refresh_token);
+    }
+
 }
