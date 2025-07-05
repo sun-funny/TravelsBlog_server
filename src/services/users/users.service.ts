@@ -20,17 +20,17 @@ export class UsersService {
         return this.userModel.find();
     }
 
-    async getUserById(id): Promise<User | null> {
-        return this.userModel.findById(id);
+    async getUserById(id: string): Promise<User | null> {
+        const user = await this.userModel.findById(id).exec();
+        return user;
     }
+
     async registerUser(user: IUser): Promise<boolean> {
         const defaultRole ='user';
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(user.psw, salt);
-        console.log('hashedPassword', hashedPassword)
-        const newUser:IUser = {...user, psw: hashedPassword, role: defaultRole }; // add default role
+        const newUser:IUser = {...user, psw: hashedPassword, role: defaultRole };
         const userData = new this.userModel(newUser);
-        console.log('userData', userData)
         userData.save();
 
         return Promise.resolve(true);
@@ -51,16 +51,16 @@ export class UsersService {
         return this.userModel.findByIdAndDelete(id);
     }
 
-    async checkAuthUser(login: string, psw: string): Promise<IUser[]> {
-        const usersArr = <IUser[]>await this.userModel.find<IUser>({login: login});
-        if (usersArr.length === 0 ) {
+    async checkAuthUser(login: string, psw: string): Promise<User[]> {
+        const user = await this.userModel.findOne({ login }).exec();
+        if (!user) {
             throw new BadRequestException('Логин указан неверно');
         }
-        const isMatch: boolean = bcrypt.compareSync(psw, usersArr[0].psw);
+        const isMatch: boolean = bcrypt.compareSync(psw, user.psw);
         if (!isMatch) {
             throw new BadRequestException('Пароль указан неверно');
         }
-        return Promise.resolve(usersArr);
+        return [user];
     }
     
     async getUserByLogin(login: string): Promise<IUser | null> {

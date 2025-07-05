@@ -15,6 +15,11 @@ async function bootstrap() {
     prefix: '/assets/',
   });
 
+  app.use((req, res, next) => {
+    console.log('Headers:', req.headers);
+    next();
+  });
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

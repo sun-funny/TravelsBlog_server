@@ -33,8 +33,14 @@ export class UsersController {
 
 
     @Get(":id")
-        getUserById(@Param('id', ValidationParamIdPipe) id): Promise<User | null> {
-    return this.userService.getUserById(id);
+    async getUserById(@Param('id', ValidationParamIdPipe) id: string): Promise<User> {
+        console.log('Searching for user with ID:', id);
+        const user = await this.userService.getUserById(id);
+        if (!user) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+        console.log('Found user:', user);
+        return user;
     }
 
 
