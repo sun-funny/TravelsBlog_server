@@ -53,4 +53,17 @@ export class CommentsService {
       throw error;
     }
   }
+
+  async deleteComment(id: string): Promise<{ message: string }> {
+    const result = await this.commentModel.findByIdAndDelete(id).exec();
+    if (!result) {
+      throw new Error('Comment not found');
+    }
+    return { message: 'Comment deleted successfully' };
+  }
+
+  async deleteAllComments(): Promise<{ message: string }> {
+    const result = await this.commentModel.deleteMany({}).exec();
+    return { message: `Deleted ${result.deletedCount} comments` };
+  }
 }
