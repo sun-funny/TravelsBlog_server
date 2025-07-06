@@ -47,6 +47,6 @@ export class TravelsController {
     }),
   }))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    return { url: `assets/upload_country/${file.filename}` };
+    return { url: `/upload_country/${file.filename}` };
   }
 }

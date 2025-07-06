@@ -22,6 +22,10 @@ import { CommentsModule } from './controllers/comments/comments.module';
       rootPath: join(__dirname, '..', 'assets/uploads'),
       serveRoot: '/uploads',
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'assets/upload_country'),
+      serveRoot: '/upload_country',
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
