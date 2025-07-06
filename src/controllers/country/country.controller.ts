@@ -53,9 +53,8 @@ export class PointsController {
   }))
   async uploadFiles(@UploadedFiles() files: Express.Multer.File[]) {
     const fileUrls = files.map(file => {
-      return `assets/uploads/${file.filename}`;
+      return `/uploads/${file.filename}`;
     });
     return { urls: fileUrls };
   }
-
 }
