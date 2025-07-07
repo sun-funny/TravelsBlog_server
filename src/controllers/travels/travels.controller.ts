@@ -14,6 +14,11 @@ export class TravelsController {
     return this.travelsService.getAllTravels();
   }
 
+  @Get(':id')
+    async getTravelById(@Param('id') id: string) {
+    return this.travelsService.getTravelById(id);
+  }
+
   @Post()
   async createTravel(@Body() travelDto: TravelDto) {
     return this.travelsService.createTravel(travelDto);

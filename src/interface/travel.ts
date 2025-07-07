@@ -1,3 +1,4 @@
+import * as mongoose from "mongoose";
 export interface ITravel {
   id: string;
   country: string;
@@ -8,6 +9,5 @@ export interface ITravel {
   img: string;
   year: number;
   featured: boolean;
-  top?: string;
-  left?: string;
+  _id?: mongoose.Types.ObjectId;
 }

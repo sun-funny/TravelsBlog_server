@@ -8,6 +8,4 @@ export class TravelDto {
   readonly img: string;
   readonly year: number;
   readonly featured: boolean;
-  readonly top?: string;
-  readonly left?: string;
 }

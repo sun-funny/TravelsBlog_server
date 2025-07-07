@@ -17,17 +17,13 @@ export class TravelsService {
     return createdTravel.save();
   }
 
-async updateTravel(id: string, travelDto: TravelDto): Promise<Travel | null> {
-  return this.travelModel.findByIdAndUpdate(id, travelDto, { new: true }).exec();
-}
+  async updateTravel(id: string, travelDto: TravelDto): Promise<Travel | null> {
+    return this.travelModel.findOneAndUpdate({ id }, travelDto, { new: true }).exec();
+  }
 
   async deleteTravel(id: string): Promise<any> {
-  try {
-    return await this.travelModel.deleteOne({ id: id }).exec();
-  } catch (error) {
-    throw error;
+    return this.travelModel.findByIdAndDelete(id).exec();
   }
-}
 
   async deleteTravels(): Promise<any> {
     return this.travelModel.deleteMany({});
@@ -35,5 +31,9 @@ async updateTravel(id: string, travelDto: TravelDto): Promise<Travel | null> {
 
   async deleteAllTravels(): Promise<any> {
   return this.travelModel.deleteMany({}).exec();
+  }
+
+  async getTravelById(id: string): Promise<Travel | null> {
+    return this.travelModel.findOne({ id }).exec();
   }
 }

@@ -21,8 +21,6 @@ export class Travel implements ITravel {
     @Prop() img: string;
     @Prop() year: number;
     @Prop() featured: boolean;
-    @Prop() top: string;
-    @Prop() left: string;
 }
  
 export const TravelSchema = SchemaFactory.createForClass(Travel);
