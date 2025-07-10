@@ -21,8 +21,9 @@ export class TravelsService {
     return this.travelModel.findOneAndUpdate({ id }, travelDto, { new: true }).exec();
   }
 
+
   async deleteTravel(id: string): Promise<any> {
-    return this.travelModel.findByIdAndDelete(id).exec();
+    return this.travelModel.findOneAndDelete({ id }).exec();
   }
 
   async deleteTravels(): Promise<any> {
