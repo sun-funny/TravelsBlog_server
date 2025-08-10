@@ -4,6 +4,7 @@ import { TravelDto } from 'src/dto/travel-dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { Express } from 'express';
 
 @Controller('travels')
 export class TravelsController {

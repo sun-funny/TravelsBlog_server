@@ -14,7 +14,6 @@ import {
 import {UsersService} from "../../services/users/users.service";
 import { User } from 'src/shemas/user';
 import {UserDto} from "../../dto/user-dto";
-import RejectedValue = jest.RejectedValue;
 import {AuthGuard} from "@nestjs/passport";
 import {JwtAuthGuard} from "../../services/Authentication/jwt-auth.guard/jwt-auth.guard.service";
 import { ValidationParamIdPipe } from 'src/pipes/param-id.pipe';

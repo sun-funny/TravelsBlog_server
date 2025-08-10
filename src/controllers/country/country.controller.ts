@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Post, Put, Delete, Param, UseInterceptors, UploadedFiles} from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Delete, Param, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
 import { PointService } from 'src/services/country/country.service';
 import { PointDto } from 'src/dto/point-dto';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { Express } from 'express';
 
 @Controller('points')
 export class PointsController {
@@ -19,7 +20,7 @@ export class PointsController {
     return this.pointService.getPointsByCountry(countryId);
   }
 
-   @Put(':id')
+  @Put(':id')
   async updateCountry(@Param('id') id: string, @Body() pointDto: PointDto) {
     return this.pointService.updateCountry(id, pointDto);
   }
