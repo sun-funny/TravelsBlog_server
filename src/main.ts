@@ -9,17 +9,25 @@ async function bootstrap() {
   app.enableCors({
     origin: 'http://localhost:4200',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
+  
+  app.useStaticAssets(join(__dirname, '..', 'assets', 'uploads'), {
+    prefix: '/uploads',
+  });
+  
+  app.useStaticAssets(join(__dirname, '..', 'assets', 'upload_country'), {
+    prefix: '/upload_country',
   });
   
   app.useStaticAssets(join(__dirname, '..', 'assets'), {
     prefix: '/assets/',
   });
 
-  app.use((req, res, next) => {
-    console.log('Headers:', req.headers);
-    next();
-  });
-
   await app.listen(process.env.PORT ?? 3000);
+  console.log(`Application is running on: ${await app.getUrl()}`);
+  console.log(`Uploads available at: ${await app.getUrl()}/uploads`);
 }
+
 bootstrap();
